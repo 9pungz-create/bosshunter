@@ -29,7 +29,7 @@ STATUS_BOSSES_PER_PAGE = 5
 GROUP_BOSSES_PER_PAGE = 25
 MAX_GROUP_BOSSES = 5
 DEFAULT_BOSS_SERVER = "Austeja"
-SUPPORTED_BOSS_SERVERS = ("Austeja", "Laima", "Jurate")
+DEFAULT_BOSS_SERVERS = ("Austeja", "Laima", "Jurate")
 LOCAL_TIMEZONE = timezone(timedelta(hours=7))
 STATUS_TABLE_LIMIT = 1900
 ACTIVE_ALERTS_PER_PAGE = 25
@@ -65,12 +65,21 @@ def env_bool(key: str, default: bool = False) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def configured_boss_servers() -> tuple[str, ...]:
+    servers = list(DEFAULT_BOSS_SERVERS)
+    for raw_server in os.getenv("EXTRA_BOSS_SERVERS", "").split(","):
+        server = raw_server.strip()
+        if server and server.lower() not in {item.lower() for item in servers}:
+            servers.append(server)
+    return tuple(servers)
+
+
 TOKEN = os.getenv("DISCORD_TOKEN")
 CHANNEL_ID = env_int("DISCORD_CHANNEL_ID")
+SUPPORTED_BOSS_SERVERS = configured_boss_servers()
 SERVER_ALERT_CHANNEL_IDS = {
-    "Austeja": env_int("DISCORD_AUSTEJA_CHANNEL_ID", CHANNEL_ID),
-    "Laima": env_int("DISCORD_LAIMA_CHANNEL_ID", CHANNEL_ID),
-    "Jurate": env_int("DISCORD_JURATE_CHANNEL_ID", CHANNEL_ID),
+    server: env_int(f"DISCORD_{server.upper()}_CHANNEL_ID", CHANNEL_ID)
+    for server in SUPPORTED_BOSS_SERVERS
 }
 GUILD_ID = env_int("DISCORD_GUILD_ID")
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "!")
@@ -82,7 +91,10 @@ ALERT_MESSAGE_DELETE_DELAY_SECONDS = 60
 ALERT_MESSAGE_DELETE_NOTICE = "ข้อความนี้กำลังจะถูกลบในอีก 1 นาที"
 MISSING_COOLDOWN_ALERTS_PER_PAGE = env_int("MISSING_COOLDOWN_ALERTS_PER_PAGE", 10)
 CHANNEL_SUFFIX_PATTERN = re.compile(r"_ch[a-z0-9]+$", re.IGNORECASE)
-SERVER_SUFFIX_PATTERN = re.compile(r"_(austeja|laima|jurate)$", re.IGNORECASE)
+SERVER_SUFFIX_PATTERN = re.compile(
+    r"_(" + "|".join(re.escape(server.lower()) for server in SUPPORTED_BOSS_SERVERS) + r")$",
+    re.IGNORECASE,
+)
 JsonDict = dict[str, Any]
 JsonList = list[Any]
 BOSS_DATA_LOCK = threading.RLock()
@@ -326,6 +338,13 @@ def normalize_boss_server(server: str | None) -> str:
         if value.lower() == supported_server.lower():
             return supported_server
     raise ValueError("invalid server")
+
+
+def boss_server_choices() -> list[discord.app_commands.Choice[str]]:
+    return [
+        discord.app_commands.Choice(name=server, value=server)
+        for server in SUPPORTED_BOSS_SERVERS
+    ]
 
 
 def parse_boss_status_args(args: tuple[str, ...]) -> tuple[str, int]:
@@ -1247,6 +1266,35 @@ class AlertBossKilledButton(discord.ui.Button):
         )
 
 
+class AlertActiveBossAlertsButton(discord.ui.Button):
+    def __init__(self, boss_id: str):
+        self.boss_id = boss_id
+        super().__init__(
+            label="ดูรายการที่กำลังรอบันทึกทั้งหมด",
+            style=discord.ButtonStyle.secondary,
+            custom_id=f"alert_active_boss_alerts:{boss_id}",
+        )
+
+    async def callback(self, interaction: discord.Interaction) -> None:
+        reload_boss_data()
+        try:
+            stored_boss_id = resolve_boss_id(self.boss_id)
+            boss = boss_data.get(stored_boss_id)
+        except KeyError:
+            boss = None
+
+        try:
+            boss_server = normalize_boss_server(str(boss.get("server") if boss else DEFAULT_BOSS_SERVER))
+        except ValueError:
+            boss_server = DEFAULT_BOSS_SERVER
+
+        await interaction.response.send_message(
+            embed=build_active_boss_alerts_embed(boss_server, 1),
+            view=ActiveBossAlertsView(boss_server, 1),
+            ephemeral=True,
+        )
+
+
 class AlertBossKilledModal(discord.ui.Modal):
     def __init__(
         self,
@@ -1323,6 +1371,7 @@ class AlertBossKilledView(discord.ui.View):
     def __init__(self, boss_id: str, disabled: bool = False):
         super().__init__(timeout=None)
         self.add_item(AlertBossKilledButton(boss_id, disabled))
+        self.add_item(AlertActiveBossAlertsButton(boss_id))
 
 
 class ActiveBossKilledModal(discord.ui.Modal):
@@ -1452,6 +1501,7 @@ class AlertSetCooldownView(discord.ui.View):
     def __init__(self, boss_id: str):
         super().__init__(timeout=None)
         self.add_item(AlertSetCooldownButton(boss_id))
+        self.add_item(AlertActiveBossAlertsButton(boss_id))
 
 
 class ExpiredAlertCooldownView(discord.ui.View):
@@ -1459,6 +1509,7 @@ class ExpiredAlertCooldownView(discord.ui.View):
         super().__init__(timeout=None)
         self.add_item(AlertBossKilledButton(boss_id, disabled=True))
         self.add_item(AlertSetCooldownButton(boss_id, disabled=cooldown_disabled))
+        self.add_item(AlertActiveBossAlertsButton(boss_id))
 
 
 class SetCooldownButton(discord.ui.Button):
@@ -1993,7 +2044,7 @@ def build_spawn_alert_embed(boss: dict, spawn_time: datetime) -> discord.Embed:
     embed.add_field(name="คูลดาวน์", value=f"{boss.get('cooldown_minutes', 0)} นาที", inline=True)
     embed.add_field(name="ธาตุ", value=str(boss.get("element") or "ไม่ระบุ"), inline=True)
     embed.add_field(name="เผ่า", value=str(boss.get("race") or "ไม่ระบุ"), inline=True)
-    embed.add_field(name="วิธีใช้งาน", value="กดปุ่ม **บันทึกเวลา** หลังบอสตาย หรือใช้ `/active_boss_alerts` เพื่อดูรายการที่กำลังรอบันทึกทั้งหมด", inline=False)
+    embed.add_field(name="วิธีใช้งาน", value="กดปุ่ม **บันทึกเวลา** หลังบอสตาย หรือกด **ดูรายการที่กำลังรอบันทึกทั้งหมด** เพื่อเลือกจากแผงรวม", inline=False)
     return embed
 
 
@@ -2341,13 +2392,7 @@ async def setup_boss(ctx: commands.Context, server: str = DEFAULT_BOSS_SERVER) -
 
 
 @bot.tree.command(name="setup_boss", description="ส่งแผงจัดกลุ่มเป้าหมายล่าบอส")
-@discord.app_commands.choices(
-    server=[
-        discord.app_commands.Choice(name="Austeja", value="Austeja"),
-        discord.app_commands.Choice(name="Laima", value="Laima"),
-        discord.app_commands.Choice(name="Jurate", value="Jurate"),
-    ]
-)
+@discord.app_commands.choices(server=boss_server_choices())
 async def setup_boss_slash(
     interaction: discord.Interaction,
     server: str = DEFAULT_BOSS_SERVER,
@@ -2434,13 +2479,7 @@ async def active_boss_alerts(
 
 
 @bot.tree.command(name="active_boss_alerts", description="ดูบอสที่เกิดแล้วและกำลังรอบันทึกเวลา")
-@discord.app_commands.choices(
-    server=[
-        discord.app_commands.Choice(name="Austeja", value="Austeja"),
-        discord.app_commands.Choice(name="Laima", value="Laima"),
-        discord.app_commands.Choice(name="Jurate", value="Jurate"),
-    ]
-)
+@discord.app_commands.choices(server=boss_server_choices())
 async def active_boss_alerts_slash(
     interaction: discord.Interaction,
     server: str = DEFAULT_BOSS_SERVER,
@@ -2488,13 +2527,7 @@ async def set_alert_channel(
 
 @bot.tree.command(name="set_alert_channel", description="ตั้ง channel สำหรับแจ้งเตือนบอสเกิด")
 @discord.app_commands.default_permissions(manage_guild=True)
-@discord.app_commands.choices(
-    server=[
-        discord.app_commands.Choice(name="Austeja", value="Austeja"),
-        discord.app_commands.Choice(name="Laima", value="Laima"),
-        discord.app_commands.Choice(name="Jurate", value="Jurate"),
-    ]
-)
+@discord.app_commands.choices(server=boss_server_choices())
 async def set_alert_channel_slash(
     interaction: discord.Interaction,
     server: str = DEFAULT_BOSS_SERVER,
@@ -2522,13 +2555,7 @@ async def set_alert_channel_slash(
 
 
 @bot.tree.command(name="boss_status", description="ดูเวลาเกิดรอบถัดไปของบอส")
-@discord.app_commands.choices(
-    server=[
-        discord.app_commands.Choice(name="Austeja", value="Austeja"),
-        discord.app_commands.Choice(name="Laima", value="Laima"),
-        discord.app_commands.Choice(name="Jurate", value="Jurate"),
-    ]
-)
+@discord.app_commands.choices(server=boss_server_choices())
 async def boss_status_slash(
     interaction: discord.Interaction,
     server: str = DEFAULT_BOSS_SERVER,
@@ -2873,13 +2900,7 @@ async def set_cooldown_boss(ctx: commands.Context, server: Optional[str] = None,
 
 @bot.tree.command(name="set_cooldown_boss", description="ส่งรายการบอสที่ยังไม่มีคูลดาวน์ไปยังห้องนี้")
 @discord.app_commands.default_permissions(manage_guild=True)
-@discord.app_commands.choices(
-    server=[
-        discord.app_commands.Choice(name="Austeja", value="Austeja"),
-        discord.app_commands.Choice(name="Laima", value="Laima"),
-        discord.app_commands.Choice(name="Jurate", value="Jurate"),
-    ]
-)
+@discord.app_commands.choices(server=boss_server_choices())
 async def set_cooldown_boss_slash(
     interaction: discord.Interaction,
     server: Optional[str] = None,
