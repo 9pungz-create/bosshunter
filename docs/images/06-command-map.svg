@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620">
+  <rect width="1100" height="620" fill="#f6f8fb"/>
+  <text x="550" y="54" text-anchor="middle" font-family="Tahoma, Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">คำสั่งที่ใช้บ่อย</text>
+  <text x="550" y="86" text-anchor="middle" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#526070">แนะนำให้ใช้ Slash Commands แบบ / เพื่อให้เห็น option ชัดเจน</text>
+
+  <g font-family="Tahoma, Arial, sans-serif">
+    <rect x="75" y="135" width="300" height="330" rx="16" fill="#ffffff" stroke="#d7ddea"/>
+    <text x="105" y="178" font-size="21" font-weight="700" fill="#172033">สมาชิกทั่วไป</text>
+    <text x="105" y="220" font-size="16" fill="#465266">/setup_boss</text>
+    <text x="105" y="252" font-size="16" fill="#465266">/find_boss_spawn</text>
+    <text x="105" y="284" font-size="16" fill="#465266">/boss_status</text>
+    <text x="105" y="316" font-size="16" fill="#465266">/help</text>
+
+    <rect x="400" y="135" width="300" height="330" rx="16" fill="#ffffff" stroke="#d7ddea"/>
+    <text x="430" y="178" font-size="21" font-weight="700" fill="#172033">บันทึกเวลา</text>
+    <text x="430" y="220" font-size="16" fill="#465266">/boss_killed</text>
+    <text x="430" y="252" font-size="16" fill="#465266">/boss_killed_id</text>
+    <text x="430" y="284" font-size="16" fill="#465266">ปุ่ม บันทึกเวลา</text>
+    <text x="430" y="316" font-size="16" fill="#465266">ปุ่ม ตั้งค่าคูลดาวน์</text>
+
+    <rect x="725" y="135" width="300" height="330" rx="16" fill="#ffffff" stroke="#d7ddea"/>
+    <text x="755" y="178" font-size="21" font-weight="700" fill="#172033">แอดมิน</text>
+    <text x="755" y="220" font-size="16" fill="#465266">/add_boss</text>
+    <text x="755" y="252" font-size="16" fill="#465266">/set_boss_cooldown</text>
+    <text x="755" y="284" font-size="16" fill="#465266">/reset_cooldown_boss</text>
+    <text x="755" y="316" font-size="16" fill="#465266">/clear_boss</text>
+    <text x="755" y="348" font-size="16" fill="#465266">/set_alert_channel</text>
+
+    <rect x="240" y="500" width="620" height="52" rx="12" fill="#eaf7ef" stroke="#b8e2c6"/>
+    <text x="550" y="532" text-anchor="middle" font-size="16" font-weight="700" fill="#267a43">คำสั่ง /setup_boss และผลลัพธ์ตั้งค่าหลายจุดจะแสดงแบบส่วนตัว ไม่รบกวน channel</text>
+  </g>
+</svg>

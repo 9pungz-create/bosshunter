@@ -1,0 +1,11 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+bot.log
+bot.err
+bot.db
+bot.db-wal
+bot.db-shm
+boss_groups.json
+message_delete_queue.json

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620">
+  <rect width="1100" height="620" fill="#f6f8fb"/>
+  <text x="550" y="54" text-anchor="middle" font-family="Tahoma, Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">เพิ่มบอสที่ใกล้เกิดที่สุด 5 ตัว</text>
+  <text x="550" y="86" text-anchor="middle" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#526070">ปุ่มนี้จะตั้งกลุ่มของผู้ใช้ให้เป็น 5 รายชื่อที่ใกล้เวลาเกิดที่สุดทันที</text>
+
+  <g font-family="Tahoma, Arial, sans-serif">
+    <rect x="100" y="135" width="390" height="355" rx="16" fill="#ffffff" stroke="#d7ddea"/>
+    <text x="130" y="178" font-size="22" font-weight="700" fill="#172033">ก่อนกดปุ่ม</text>
+    <text x="130" y="215" font-size="16" fill="#526070">กลุ่มของฉันอาจว่าง หรือมีรายการเดิมอยู่</text>
+    <rect x="130" y="250" width="300" height="46" rx="8" fill="#e9edff"/>
+    <text x="280" y="280" text-anchor="middle" font-size="16" font-weight="700" fill="#4355d9">เพิ่ม 5 ตัวใกล้เกิด</text>
+
+    <line x1="515" y1="310" x2="585" y2="310" stroke="#5468ff" stroke-width="4"/>
+    <path d="M585 310 L568 300 L568 320 Z" fill="#5468ff"/>
+
+    <rect x="610" y="135" width="390" height="355" rx="16" fill="#ffffff" stroke="#d7ddea"/>
+    <text x="640" y="178" font-size="22" font-weight="700" fill="#172033">หลังจากกด</text>
+    <text x="640" y="215" font-size="16" fill="#526070">ระบบแทนที่กลุ่มด้วยรายการใกล้เกิดที่สุด</text>
+    <text x="640" y="252" font-size="15" fill="#172033">1. บอส แมพเลเวล 128 | CH3 | in 16 minutes</text>
+    <text x="640" y="284" font-size="15" fill="#172033">2. บอส แมพเลเวล 120 | CH1 | in 24 minutes</text>
+    <text x="640" y="316" font-size="15" fill="#172033">3. บอส แมพเลเวล 133 | CH5 | in 35 minutes</text>
+    <text x="640" y="348" font-size="15" fill="#172033">4. บอส แมพเลเวล 95 | CH1 | in 42 minutes</text>
+    <text x="640" y="380" font-size="15" fill="#172033">5. บอส แมพเลเวล 107 | CH1 | in 56 minutes</text>
+    <rect x="640" y="420" width="310" height="38" rx="8" fill="#eaf7ef"/>
+    <text x="795" y="445" text-anchor="middle" font-size="15" font-weight="700" fill="#267a43">ระบบจะแจ้ง DM เมื่อบอสเริ่มเข้าเฟส</text>
+  </g>
+</svg>

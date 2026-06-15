@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="640" viewBox="0 0 1100 640">
+  <rect width="1100" height="640" fill="#f6f8fb"/>
+  <text x="550" y="54" text-anchor="middle" font-family="Tahoma, Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">ข้อความแจ้งเตือนบอสเกิด</text>
+  <text x="550" y="86" text-anchor="middle" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#526070">ข้อความใน channel ใช้สำหรับบันทึกเวลาหลังบอสตาย ส่วนเจ้าของกลุ่มจะได้รับ DM แจ้งเตือน</text>
+
+  <g font-family="Tahoma, Arial, sans-serif">
+    <rect x="95" y="130" width="440" height="380" rx="16" fill="#2f3136"/>
+    <text x="125" y="170" font-size="18" font-weight="700" fill="#ffffff">ข้อความใน channel</text>
+    <rect x="125" y="198" width="380" height="220" rx="10" fill="#36393f"/>
+    <text x="150" y="238" font-size="17" font-weight="700" fill="#ffffff">บอส แมพเลเวล 120 CH2 เริ่มเข้าเฟส</text>
+    <text x="150" y="272" font-size="15" fill="#cfd5df">เวลาเกิด: Friday, 12 June 2026 14:45</text>
+    <text x="150" y="305" font-size="15" fill="#cfd5df">ช่องเกิด: 2 | ธาตุ: น้ำ | เผ่า: กลายพันธุ์</text>
+    <text x="150" y="338" font-size="15" fill="#cfd5df">กดปุ่มบันทึกเวลาคูลดาวน์ หลังบอสตาย</text>
+    <rect x="150" y="363" width="115" height="38" rx="8" fill="#da373c"/>
+    <text x="208" y="388" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">บันทึกเวลา</text>
+
+    <rect x="565" y="130" width="440" height="380" rx="16" fill="#ffffff" stroke="#d7ddea"/>
+    <text x="595" y="170" font-size="18" font-weight="700" fill="#172033">DM ถึงเจ้าของกลุ่ม</text>
+    <rect x="595" y="198" width="380" height="220" rx="10" fill="#f1f4ff" stroke="#d8defb"/>
+    <text x="620" y="238" font-size="17" font-weight="700" fill="#172033">บอส แมพเลเวล 120 CH2 เริ่มเข้าเฟส</text>
+    <text x="620" y="272" font-size="15" fill="#465266">เวลาเกิด: Friday, 12 June 2026 14:45</text>
+    <text x="620" y="305" font-size="15" fill="#465266">ช่องเกิด: 2 | ธาตุ: น้ำ | เผ่า: กลายพันธุ์</text>
+    <text x="620" y="352" font-size="15" fill="#526070">ส่งให้เฉพาะสมาชิกที่มีบอสนี้อยู่ในกลุ่ม</text>
+  </g>
+</svg>

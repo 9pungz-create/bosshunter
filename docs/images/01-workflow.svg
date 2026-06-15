@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560">
+  <rect width="1100" height="560" fill="#f6f8fb"/>
+  <text x="550" y="54" text-anchor="middle" font-family="Tahoma, Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">ภาพรวมการใช้งาน BossHunter</text>
+  <text x="550" y="88" text-anchor="middle" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#526070">สมาชิกเลือกกลุ่มเป้าหมายส่วนตัว แล้วระบบแจ้งเตือนเมื่อบอสในกลุ่มเริ่มเข้าเฟส</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#5468ff"/>
+    </marker>
+  </defs>
+
+  <g font-family="Tahoma, Arial, sans-serif">
+    <rect x="70" y="150" width="210" height="140" rx="14" fill="#ffffff" stroke="#d7ddea"/>
+    <circle cx="105" cy="188" r="18" fill="#e9edff"/>
+    <text x="105" y="195" text-anchor="middle" font-size="18" font-weight="700" fill="#5468ff">1</text>
+    <text x="130" y="185" font-size="20" font-weight="700" fill="#172033">เปิดแผงจัดกลุ่ม</text>
+    <text x="100" y="225" font-size="16" fill="#465266">ใช้คำสั่ง /setup_boss</text>
+    <text x="100" y="252" font-size="16" fill="#465266">แผงจะแสดงเฉพาะผู้ใช้</text>
+
+    <rect x="325" y="150" width="210" height="140" rx="14" fill="#ffffff" stroke="#d7ddea"/>
+    <circle cx="360" cy="188" r="18" fill="#e9edff"/>
+    <text x="360" y="195" text-anchor="middle" font-size="18" font-weight="700" fill="#5468ff">2</text>
+    <text x="385" y="185" font-size="20" font-weight="700" fill="#172033">เลือกบอสเข้ากลุ่ม</text>
+    <text x="355" y="225" font-size="16" fill="#465266">เลือกเองจากเมนู</text>
+    <text x="355" y="252" font-size="16" fill="#465266">หรือกดเพิ่ม 5 ตัวใกล้เกิด</text>
+
+    <rect x="580" y="150" width="210" height="140" rx="14" fill="#ffffff" stroke="#d7ddea"/>
+    <circle cx="615" cy="188" r="18" fill="#e9edff"/>
+    <text x="615" y="195" text-anchor="middle" font-size="18" font-weight="700" fill="#5468ff">3</text>
+    <text x="640" y="185" font-size="20" font-weight="700" fill="#172033">รอแจ้งเตือน</text>
+    <text x="610" y="225" font-size="16" fill="#465266">บอทคำนวณเวลาเกิด</text>
+    <text x="610" y="252" font-size="16" fill="#465266">จากข้อมูลบอสที่บันทึกไว้</text>
+
+    <rect x="835" y="150" width="210" height="140" rx="14" fill="#ffffff" stroke="#d7ddea"/>
+    <circle cx="870" cy="188" r="18" fill="#e9edff"/>
+    <text x="870" y="195" text-anchor="middle" font-size="18" font-weight="700" fill="#5468ff">4</text>
+    <text x="895" y="185" font-size="20" font-weight="700" fill="#172033">รับ DM</text>
+    <text x="865" y="225" font-size="16" fill="#465266">เมื่อบอสเริ่มเข้าเฟส</text>
+    <text x="865" y="252" font-size="16" fill="#465266">เจ้าของกลุ่มจะได้รับ DM</text>
+
+    <line x1="285" y1="220" x2="315" y2="220" stroke="#5468ff" stroke-width="3" marker-end="url(#arrow)"/>
+    <line x1="540" y1="220" x2="570" y2="220" stroke="#5468ff" stroke-width="3" marker-end="url(#arrow)"/>
+    <line x1="795" y1="220" x2="825" y2="220" stroke="#5468ff" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="205" y="365" width="690" height="90" rx="14" fill="#fff8e8" stroke="#f2cf76"/>
+    <text x="550" y="400" text-anchor="middle" font-size="20" font-weight="700" fill="#6e5515">ส่วนของแอดมินหรือคนบันทึกเวลา</text>
+    <text x="550" y="432" text-anchor="middle" font-size="16" fill="#6e5515">เมื่อบอสตาย ให้ใช้ /boss_killed หรือปุ่มบันทึกเวลาในข้อความแจ้งเตือน เพื่ออัปเดตรอบถัดไป</text>
+  </g>
+</svg>
