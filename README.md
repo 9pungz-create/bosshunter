@@ -76,6 +76,8 @@ python bot.py
 - `!boss_status Jurate 2` หรือ `!boss_status 2 Jurate` ดูสถานะหน้าที่ 2 ของ Server Jurate
 - `!boss_info boss_lv80_ch1_austeja` ดูรายละเอียดบอสจาก boss_id ทาง DM
 - `/boss_info boss_id:boss_lv80_ch1_austeja` ดูรายละเอียดบอสจาก boss_id แบบส่วนตัว
+- `!active_boss_alerts Austeja` ดูบอสที่เกิดแล้วและกำลังรอบันทึกเวลา พร้อมเมนูเลือกบอสทาง DM
+- `/active_boss_alerts server:Austeja` ดูบอสที่เกิดแล้วและกำลังรอบันทึกเวลา พร้อมเมนูเลือกบอสแบบส่วนตัว
 - `!set_cooldown_boss Jurate 2` แอดมินส่งข้อความตั้งค่าคูลดาวน์ของบอส Server Jurate ที่ `cooldown_minutes = 0` ไปยังห้องที่ใช้คำสั่ง ครั้งละ 10 รายการต่อหน้า
 - `/set_cooldown_boss server:Jurate page:2` แอดมินส่งข้อความตั้งค่าคูลดาวน์ของบอส Server Jurate ที่ `cooldown_minutes = 0` ไปยังห้องที่ใช้คำสั่ง ครั้งละ 10 รายการต่อหน้า
 - `!find_boss_spawn` ดูบอสที่ใกล้เวลาเกิดที่สุด 5 ตัว โดยส่งผลลัพธ์ทาง DM

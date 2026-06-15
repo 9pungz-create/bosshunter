@@ -32,6 +32,7 @@ DEFAULT_BOSS_SERVER = "Austeja"
 SUPPORTED_BOSS_SERVERS = ("Austeja", "Laima", "Jurate")
 LOCAL_TIMEZONE = timezone(timedelta(hours=7))
 STATUS_TABLE_LIMIT = 1900
+ACTIVE_ALERTS_PER_PAGE = 25
 STATUS_TABLE_COLUMNS = [
     ("บอส", 34),
     ("เวลาที่บันทึก", 26),
@@ -436,6 +437,44 @@ def upcoming_boss_spawns(limit: int = 5, server: str | None = None) -> list[tupl
 
     upcoming.sort(key=lambda item: item[3])
     return upcoming[:limit]
+
+
+def active_boss_alert_items(server: str | None = None) -> list[tuple[str, dict, datetime, timedelta, bool]]:
+    now = utc_now()
+    boss_server = normalize_boss_server(server)
+    active_items: list[tuple[str, dict, datetime, timedelta, bool]] = []
+
+    for boss_id, boss in sorted_boss_items():
+        if not boss.get("alert_sent") or not boss.get("next_spawn"):
+            continue
+
+        try:
+            current_server = normalize_boss_server(str(boss.get("server") or DEFAULT_BOSS_SERVER))
+            spawn_time = parse_time(str(boss["next_spawn"]))
+            cooldown_minutes = int(boss.get("cooldown_minutes", 0))
+        except (TypeError, ValueError):
+            continue
+
+        if current_server != boss_server or cooldown_minutes == 0:
+            continue
+
+        age = now - spawn_time
+        if age.total_seconds() < 0:
+            continue
+
+        is_expired = age >= timedelta(minutes=UNRECORDED_BOSS_RESET_MINUTES)
+        active_items.append((boss_id, boss, spawn_time, age, is_expired))
+
+    active_items.sort(key=lambda item: item[2])
+    return active_items
+
+
+def active_boss_alert_page(server: str | None, page: int) -> tuple[list[tuple[str, dict, datetime, timedelta, bool]], int, int]:
+    items = active_boss_alert_items(server)
+    total_pages = max(1, (len(items) + ACTIVE_ALERTS_PER_PAGE - 1) // ACTIVE_ALERTS_PER_PAGE)
+    page = max(1, min(page, total_pages))
+    start = (page - 1) * ACTIVE_ALERTS_PER_PAGE
+    return items[start : start + ACTIVE_ALERTS_PER_PAGE], page, total_pages
 
 
 def user_group_boss_ids(user_id: int | str) -> list[str]:
@@ -1286,6 +1325,114 @@ class AlertBossKilledView(discord.ui.View):
         self.add_item(AlertBossKilledButton(boss_id, disabled))
 
 
+class ActiveBossKilledModal(discord.ui.Modal):
+    def __init__(self, boss_id: str, alert_spawn_time: datetime):
+        super().__init__(title="บันทึกเวลาคูลดาวน์")
+        self.boss_id = boss_id
+        self.alert_spawn_time = alert_spawn_time
+        self.countdown = discord.ui.TextInput(
+            label="เวลาคูลดาวน์ HH:MM",
+            placeholder="เช่น 01:35 = 1 ชั่วโมง 35 นาที",
+            default="01:00",
+            min_length=5,
+            max_length=5,
+            required=True,
+        )
+        self.add_item(self.countdown)
+
+    async def on_submit(self, interaction: discord.Interaction) -> None:
+        try:
+            cooldown_minutes = parse_countdown_minutes(str(self.countdown.value))
+        except ValueError:
+            await interaction.response.send_message(
+                "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HH:MM` เช่น `01:35`",
+                ephemeral=True,
+            )
+            return
+
+        current_spawn_time = current_boss_spawn_time(self.boss_id)
+        if not is_same_spawn_time(self.alert_spawn_time, current_spawn_time):
+            await interaction.response.send_message(
+                "รายการนี้ถูกบันทึกหรือเปลี่ยนรอบไปแล้ว กรุณาเปิด `/active_boss_alerts` ใหม่อีกครั้ง",
+                ephemeral=True,
+            )
+            return
+
+        try:
+            boss, next_spawn = record_boss_kill(self.boss_id, cooldown_minutes)
+        except KeyError:
+            await interaction.response.send_message("ไม่พบบอสนี้แล้ว", ephemeral=True)
+            return
+
+        await interaction.response.send_message(
+            embed=build_kill_record_embed(boss, next_spawn, interaction.user),
+            ephemeral=True,
+        )
+
+
+class ActiveBossAlertSelect(discord.ui.Select):
+    def __init__(self, server: str, page: int = 1):
+        self.server = normalize_boss_server(server)
+        self.page = page
+        items, _, _ = active_boss_alert_page(self.server, page)
+        options = []
+
+        for boss_id, boss, spawn_time, age, is_expired in items:
+            status = "เกิน 45 นาที" if is_expired else "รอบันทึก"
+            age_minutes = max(0, int(age.total_seconds() // 60))
+            channel_label = boss_channel_label(boss)
+            label_parts = [boss["name"]]
+            if channel_label:
+                label_parts.append(channel_label)
+            options.append(
+                discord.SelectOption(
+                    label=" ".join(label_parts)[:100],
+                    value=boss_id,
+                    description=f"{status} | เกิดเมื่อ {age_minutes} นาที | {boss_id}"[:100],
+                )
+            )
+
+        if not options:
+            options = [
+                discord.SelectOption(
+                    label="ไม่มีบอสที่รอบันทึก",
+                    value="__empty__",
+                    description="ตอนนี้ไม่มี active alert ใน server นี้",
+                )
+            ]
+
+        super().__init__(
+            placeholder="เลือกบอสที่ตายแล้วเพื่อบันทึกคูลดาวน์",
+            min_values=1,
+            max_values=1,
+            options=options,
+            custom_id=f"active_boss_alert_select:{self.server}:{self.page}",
+            disabled=options[0].value == "__empty__",
+        )
+
+    async def callback(self, interaction: discord.Interaction) -> None:
+        boss_id = self.values[0]
+        if boss_id == "__empty__":
+            await interaction.response.send_message("ไม่มีบอสที่กำลังรอบันทึก", ephemeral=True)
+            return
+
+        spawn_time = current_boss_spawn_time(boss_id)
+        if spawn_time is None:
+            await interaction.response.send_message(
+                "รายการนี้ไม่มีเวลาเกิดแล้ว กรุณาเปิด `/active_boss_alerts` ใหม่อีกครั้ง",
+                ephemeral=True,
+            )
+            return
+
+        await interaction.response.send_modal(ActiveBossKilledModal(boss_id, spawn_time))
+
+
+class ActiveBossAlertsView(discord.ui.View):
+    def __init__(self, server: str, page: int = 1):
+        super().__init__(timeout=300)
+        self.add_item(ActiveBossAlertSelect(server, page))
+
+
 class AlertSetCooldownButton(discord.ui.Button):
     def __init__(self, boss_id: str, disabled: bool = False):
         self.boss_id = boss_id
@@ -1775,6 +1922,7 @@ def build_help_embed() -> discord.Embed:
             "`/boss_status server:Austeja` ดูสถานะบอสของ server ที่เลือก\n"
             "`/boss_status server:Jurate page:2` ดูสถานะหน้าที่ 2 ของ server นั้น\n"
             "`/boss_info boss_id:boss_lv80_ch1_austeja` ดูรายละเอียดบอสจาก boss_id\n"
+            "`/active_boss_alerts server:Austeja` ดูบอสที่เกิดแล้วและกำลังรอบันทึกเวลา\n"
             "`/find_boss_spawn` ดูบอสใกล้เกิดที่สุด 5 ตัว\n"
             "`/boss_killed_id boss_id:boss_lv80_ch1` บันทึกบอสตายด้วย id"
         ),
@@ -1826,6 +1974,61 @@ def build_find_boss_spawn_message() -> str:
         )
 
     return "\n".join(lines)
+
+
+def build_spawn_alert_embed(boss: dict, spawn_time: datetime) -> discord.Embed:
+    channel_label = boss_channel_label(boss)
+    title_parts = [boss["name"]]
+    if channel_label:
+        title_parts.append(channel_label)
+
+    embed = discord.Embed(
+        title="🟢 รอบันทึกเวลา",
+        description=f"**{' '.join(title_parts)} เริ่มเข้าเฟส** ({discord_time(spawn_time, 'R')})",
+        color=0x2ECC71,
+    )
+    embed.add_field(name="เวลาเกิด", value=discord_time(spawn_time, "F"), inline=False)
+    embed.add_field(name="Server", value=str(boss.get("server") or DEFAULT_BOSS_SERVER), inline=True)
+    embed.add_field(name="Channel", value=str(boss.get("channel") or "ไม่ระบุ"), inline=True)
+    embed.add_field(name="คูลดาวน์", value=f"{boss.get('cooldown_minutes', 0)} นาที", inline=True)
+    embed.add_field(name="ธาตุ", value=str(boss.get("element") or "ไม่ระบุ"), inline=True)
+    embed.add_field(name="เผ่า", value=str(boss.get("race") or "ไม่ระบุ"), inline=True)
+    embed.add_field(name="วิธีใช้งาน", value="กดปุ่ม **บันทึกเวลา** หลังบอสตาย หรือใช้ `/active_boss_alerts` เพื่อดูรายการที่กำลังรอบันทึกทั้งหมด", inline=False)
+    return embed
+
+
+def build_active_boss_alerts_embed(server: str | None = DEFAULT_BOSS_SERVER, page: int = 1) -> discord.Embed:
+    boss_server = normalize_boss_server(server)
+    items, page, total_pages = active_boss_alert_page(boss_server, page)
+    total_count = len(active_boss_alert_items(boss_server))
+    embed = discord.Embed(
+        title=f"📌 บอสที่เกิดแล้วและรอบันทึก | {boss_server}",
+        color=0xF1C40F if items else 0x95A5A6,
+    )
+
+    if not items:
+        embed.description = "ตอนนี้ไม่มีบอสที่กำลังรอบันทึกเวลา"
+        embed.set_footer(text=f"หน้า {page}/{total_pages} | 0 รายการ")
+        return embed
+
+    lines = []
+    for index, (boss_id, boss, spawn_time, age, is_expired) in enumerate(items, start=(page - 1) * ACTIVE_ALERTS_PER_PAGE + 1):
+        status = "🟠 เกิน 45 นาที" if is_expired else "🟢 รอบันทึก"
+        channel_label = boss_channel_label(boss)
+        channel_text = f" | {channel_label}" if channel_label else ""
+        age_minutes = max(0, int(age.total_seconds() // 60))
+        lines.append(
+            f"{index}. {status} **{boss['name']}**{channel_text} | เกิดเมื่อ {age_minutes} นาที | `{boss_id}`"
+        )
+
+    embed.description = "\n".join(lines)
+    embed.add_field(
+        name="การใช้งาน",
+        value="เลือกบอสจากเมนูด้านล่างเพื่อกรอกเวลาคูลดาวน์หลังบอสตาย",
+        inline=False,
+    )
+    embed.set_footer(text=f"หน้า {page}/{total_pages} | {total_count} รายการ")
+    return embed
 
 
 def build_boss_info_embed(boss_id: str, boss: dict) -> discord.Embed:
@@ -2020,11 +2223,6 @@ async def check_boss_spawns() -> None:
 
             grace_deadline = spawn_time + timedelta(minutes=ALERT_GRACE_MINUTES)
             if spawn_time <= now <= grace_deadline:
-                channel_label = boss_server_channel_label(boss)
-                title_parts = [boss["name"]]
-                if channel_label:
-                    title_parts.append(channel_label)
-                title = f"{' '.join(title_parts)} เริ่มเข้าเฟส"
                 channel = await get_alert_channel(boss_server)
                 if channel is None:
                     continue
@@ -2038,10 +2236,7 @@ async def check_boss_spawns() -> None:
                 boss.pop("alert_message_id", None)
                 try:
                     alert_message = await channel.send(
-                        f"⚠️ **{title}** ({discord_time(spawn_time, 'R')})\n"
-                        f"เวลาเกิด: {discord_time(spawn_time, 'F')}\n"
-                        f"{boss_detail_line(boss)}\n"
-                        f"กดปุ่มบันทึกเวลาคูลดาวน์ หลังบอสตาย",
+                        embed=build_spawn_alert_embed(boss, spawn_time),
                         view=AlertBossKilledView(boss_id),
                     )
                 except discord.HTTPException as error:
@@ -2216,6 +2411,51 @@ async def boss_info_slash(interaction: discord.Interaction, boss_id: str) -> Non
 
     await interaction.response.send_message(
         embed=build_boss_info_embed(stored_boss_id, boss_data[stored_boss_id]),
+        ephemeral=True,
+    )
+
+
+@bot.command(name="active_boss_alerts")
+async def active_boss_alerts(
+    ctx: commands.Context,
+    server: str = DEFAULT_BOSS_SERVER,
+    page: int = 1,
+) -> None:
+    reload_boss_data()
+    try:
+        boss_server = normalize_boss_server(server)
+    except ValueError:
+        await send_private_command_error(ctx, f"server ต้องเป็น {', '.join(SUPPORTED_BOSS_SERVERS)}")
+        return
+
+    embed = build_active_boss_alerts_embed(boss_server, page)
+    view = ActiveBossAlertsView(boss_server, page)
+    await send_private_command_result(ctx, embed=embed, view=view)
+
+
+@bot.tree.command(name="active_boss_alerts", description="ดูบอสที่เกิดแล้วและกำลังรอบันทึกเวลา")
+@discord.app_commands.choices(
+    server=[
+        discord.app_commands.Choice(name="Austeja", value="Austeja"),
+        discord.app_commands.Choice(name="Laima", value="Laima"),
+        discord.app_commands.Choice(name="Jurate", value="Jurate"),
+    ]
+)
+async def active_boss_alerts_slash(
+    interaction: discord.Interaction,
+    server: str = DEFAULT_BOSS_SERVER,
+    page: int = 1,
+) -> None:
+    reload_boss_data()
+    try:
+        boss_server = normalize_boss_server(server)
+    except ValueError:
+        await interaction.response.send_message(f"server ต้องเป็น {', '.join(SUPPORTED_BOSS_SERVERS)}", ephemeral=True)
+        return
+
+    await interaction.response.send_message(
+        embed=build_active_boss_alerts_embed(boss_server, page),
+        view=ActiveBossAlertsView(boss_server, page),
         ephemeral=True,
     )
 

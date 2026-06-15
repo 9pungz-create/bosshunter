@@ -1,267 +1,128 @@
 <!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <title>คู่มือการใช้งาน BossHunter Discord Bot</title>
-  <style>
-    @page { size: A4; margin: 16mm 14mm; }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: #172033;
-      background: #ffffff;
-      font-family: "Leelawadee UI", "Tahoma", "Arial", sans-serif;
-      font-size: 14px;
-      line-height: 1.62;
-    }
-    h1, h2, h3 { line-height: 1.25; margin: 0 0 10px; }
-    h1 { font-size: 30px; color: #101828; }
-    h2 {
-      margin-top: 28px;
-      padding-bottom: 6px;
-      border-bottom: 2px solid #e6eaf2;
-      font-size: 21px;
-      color: #24304a;
-      break-after: avoid;
-    }
-    h3 { margin-top: 18px; font-size: 16px; color: #33415f; }
-    p { margin: 8px 0 12px; }
-    ul, ol { margin: 8px 0 14px 24px; padding: 0; }
-    li { margin: 4px 0; }
-    code {
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: #eef2f7;
-      color: #1f2a44;
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 12.5px;
-    }
-    pre {
-      margin: 10px 0 16px;
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: #1f2430;
-      color: #f6f8fb;
-      white-space: pre-wrap;
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 12.5px;
-      line-height: 1.5;
-    }
-    .cover {
-      min-height: 92vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      text-align: center;
-      page-break-after: always;
-    }
-    .subtitle { margin: 14px auto 28px; max-width: 680px; color: #526070; font-size: 17px; }
-    .badge {
-      display: inline-block;
-      margin: 0 auto 24px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: #e9edff;
-      color: #4355d9;
-      font-weight: 700;
-    }
-    .toc {
-      display: inline-block;
-      margin: 18px auto 0;
-      padding: 18px 24px;
-      border: 1px solid #d7ddea;
-      border-radius: 12px;
-      background: #f8faff;
-      text-align: left;
-    }
-    .toc div { margin: 5px 0; }
-    .note {
-      margin: 12px 0 16px;
-      padding: 12px 14px;
-      border-left: 4px solid #5865f2;
-      border-radius: 8px;
-      background: #f1f4ff;
-      color: #33415f;
-    }
-    .warning {
-      border-left-color: #f0b429;
-      background: #fff8e8;
-      color: #6e5515;
-    }
-    .figure {
-      margin: 16px 0 24px;
-      page-break-inside: avoid;
-    }
-    .figure img {
-      width: 100%;
-      max-height: 175mm;
-      object-fit: contain;
-      border: 1px solid #d7ddea;
-      border-radius: 10px;
-      background: #f6f8fb;
-    }
-    .caption {
-      margin-top: 6px;
-      text-align: center;
-      color: #667085;
-      font-size: 12px;
-    }
-    .page-break { page-break-before: always; }
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin: 12px 0 18px;
-    }
-    .card {
-      padding: 12px 14px;
-      border: 1px solid #d7ddea;
-      border-radius: 10px;
-      background: #ffffff;
-      page-break-inside: avoid;
-    }
-    .card strong { color: #24304a; }
-  </style>
+<meta charset="utf-8">
+<title>??????????????? BossHunter Discord Bot</title>
+<style>
+@page { size: A4; margin: 15mm 13mm; }
+* { box-sizing: border-box; }
+body { margin:0; color:#172033; background:#fff; font-family:"Leelawadee UI", Tahoma, Arial, sans-serif; font-size:14px; line-height:1.62; }
+h1,h2 { line-height:1.25; margin:0 0 10px; }
+h1 { font-size:30px; color:#101828; text-align:center; margin-top:36vh; }
+h2 { margin-top:26px; padding-bottom:6px; border-bottom:2px solid #e6eaf2; font-size:21px; color:#24304a; break-after:avoid; }
+p { margin:8px 0 12px; }
+ul { margin:8px 0 14px 24px; padding:0; }
+li { margin:4px 0; }
+code { padding:1px 5px; border-radius:4px; background:#eef2f7; color:#1f2a44; font-family:Consolas, monospace; font-size:12.5px; }
+pre { margin:10px 0 16px; padding:12px 14px; border-radius:8px; background:#1f2430; color:#f6f8fb; white-space:pre-wrap; font-family:Consolas, monospace; font-size:12.5px; line-height:1.5; }
+blockquote { margin:12px 0 16px; padding:12px 14px; border-left:4px solid #4f6bed; background:#f4f7ff; color:#24304a; }
+.figure { margin:14px 0 18px; padding:12px; border:1px solid #dce3ef; border-radius:10px; background:#fbfcff; break-inside:avoid; }
+.figure img { display:block; max-width:100%; margin:auto; }
+.subtitle { text-align:center; color:#526070; font-size:17px; margin-bottom:32vh; }
+</style>
 </head>
 <body>
-  <section class="cover">
-    <div class="badge">BossHunter Discord Bot</div>
-    <h1>คู่มือการใช้งานระบบล่าบอส</h1>
-    <p class="subtitle">สำหรับสมาชิก Discord: จัดกลุ่มเป้าหมายล่าบอส รับ DM แจ้งเตือน และบันทึกเวลาคูลดาวน์ให้ระบบคำนวณรอบถัดไปได้ถูกต้อง</p>
-    <div class="toc">
-      <div>1. เริ่มต้นใช้งานด้วย <code>/setup_boss</code></div>
-      <div>2. จัดกลุ่มเป้าหมายล่าบอสส่วนตัว</div>
-      <div>3. รับ DM เมื่อบอสในกลุ่มเริ่มเข้าเฟส</div>
-      <div>4. บันทึกเวลาหลังบอสตาย</div>
-      <div>5. คำสั่งที่ใช้บ่อยและข้อควรรู้</div>
-    </div>
-  </section>
-
-  <h2>ภาพรวมการใช้งาน</h2>
-  <p>ระบบ BossHunter ช่วยให้สมาชิกเลือกบอสเป้าหมายของตัวเองได้สูงสุด 5 ตัว เมื่อบอสในกลุ่มเริ่มเข้าเฟส บอทจะส่ง DM แจ้งเตือนไปหาเจ้าของกลุ่มนั้น</p>
-  <div class="figure">
-    <img src="images/01-workflow.svg" alt="ภาพรวมการใช้งาน">
-    <div class="caption">ภาพรวม flow การใช้งานตั้งแต่เปิดแผง จัดกลุ่ม และรับ DM</div>
-  </div>
-
-  <h2>เริ่มต้นใช้งาน</h2>
-  <p>ใช้คำสั่งนี้ใน Discord:</p>
-  <pre>/setup_boss</pre>
-  <p>ระบบจะแสดงแผง <strong>จัดกลุ่มเป้าหมายล่าบอส</strong> แบบส่วนตัว เฉพาะคนที่ใช้คำสั่งเท่านั้น สมาชิกคนอื่นจะไม่เห็นแผงของเรา</p>
-  <p>ถ้าใช้คำสั่งแบบพิมพ์:</p>
-  <pre>!setup_boss</pre>
-  <p>บอทจะส่งแผงจัดกลุ่มไปทาง DM ของคนพิมพ์แทน</p>
-
-  <div class="figure">
-    <img src="images/02-group-panel.svg" alt="แผงจัดกลุ่มเป้าหมายล่าบอส">
-    <div class="caption">แผงจัดกลุ่มเป้าหมายล่าบอสแบบส่วนตัว</div>
-  </div>
-
-  <h2>จัดกลุ่มเป้าหมายล่าบอส</h2>
-  <p>สมาชิก 1 คนสามารถเพิ่มบอสเข้ากลุ่มส่วนตัวได้สูงสุด 5 ตัว กลุ่มนี้ใช้สำหรับรับ DM เมื่อบอสในกลุ่มเริ่มเข้าเฟส</p>
-  <ol>
-    <li>ใช้คำสั่ง <code>/setup_boss</code></li>
-    <li>เปิดเมนูเลือกบอส</li>
-    <li>เลือกบอสที่ต้องการติดตาม</li>
-    <li>ระบบจะบันทึกเข้ากลุ่มของเราแบบส่วนตัว</li>
-  </ol>
-  <div class="note">ถ้ารายชื่อบอสมีมากกว่า 25 ตัว ระบบจะแบ่งหน้า เพราะ Discord จำกัด select menu ไว้ที่ 25 รายการต่อเมนู ใช้ปุ่ม <code>หน้า .../...</code> เพื่อเปลี่ยนหน้า</div>
-
-  <h2>เพิ่ม 5 ตัวที่ใกล้เกิดที่สุด</h2>
-  <p>ในแผงจัดกลุ่มมีปุ่ม <code>เพิ่ม 5 ตัวใกล้เกิด</code> เมื่อกดปุ่มนี้ ระบบจะตั้งกลุ่มของเราเป็นบอส 5 ตัวที่มีเวลาเกิดใกล้ที่สุดทันที</p>
-  <div class="figure">
-    <img src="images/03-upcoming-group.svg" alt="เพิ่มบอสที่ใกล้เกิดที่สุด 5 ตัว">
-    <div class="caption">ปุ่มเพิ่ม 5 ตัวใกล้เกิดช่วยจัดกลุ่มเป้าหมายแบบเร็ว</div>
-  </div>
-
-  <h2>ดูหรือล้างกลุ่มของเรา</h2>
-  <ul>
-    <li><code>ดูกลุ่มของฉัน</code>: แสดงรายชื่อบอสที่เราเลือกไว้</li>
-    <li><code>ล้างกลุ่ม</code>: ล้างบอสทั้งหมดออกจากกลุ่มของเรา</li>
-  </ul>
-  <p>การกดปุ่มเหล่านี้จะแสดงผลแบบส่วนตัว ไม่รบกวน channel</p>
-
-  <h2 class="page-break">การแจ้งเตือนบอสเกิด</h2>
-  <p>เมื่อบอสเริ่มเข้าเฟส ระบบจะแจ้งใน channel หลัก และถ้าบอสนั้นอยู่ในกลุ่มของสมาชิกคนใด ระบบจะส่ง DM ไปหาเจ้าของกลุ่มคนนั้นด้วย</p>
-  <pre>บอส แมพเลเวล 120 CH2 เริ่มเข้าเฟส
-เวลาเกิด: Friday, 12 June 2026 14:45
-ช่องเกิด: 2 | ธาตุ: น้ำ | เผ่า: กลายพันธุ์
-กดปุ่มบันทึกเวลาคูลดาวน์ หลังบอสตาย</pre>
-  <div class="figure">
-    <img src="images/04-spawn-alert.svg" alt="ข้อความแจ้งเตือนบอสเกิด">
-    <div class="caption">ข้อความแจ้งเตือนใน channel และ DM ถึงสมาชิกเจ้าของกลุ่ม</div>
-  </div>
-
-  <h2>บันทึกเวลาหลังบอสตาย</h2>
-  <p>หลังบอสตาย ให้กดปุ่ม <code>บันทึกเวลา</code> ในข้อความแจ้งเตือนบอสเกิด แล้วกรอกเวลาคูลดาวน์รูปแบบ <code>HH:MM</code></p>
-  <div class="quick-grid">
-    <div class="card"><strong>01:35</strong><br>1 ชั่วโมง 35 นาที</div>
-    <div class="card"><strong>00:45</strong><br>45 นาที</div>
-    <div class="card"><strong>02:00</strong><br>2 ชั่วโมง</div>
-    <div class="card"><strong>00:06</strong><br>6 นาที</div>
-  </div>
-  <p>หลังบันทึกสำเร็จ ระบบจะคำนวณเวลาเกิดรอบถัดไป แสดงผู้บันทึก ปิดปุ่มเพื่อกันกดซ้ำ และลบข้อความแจ้งเตือนนั้นหลัง 1 นาที</p>
-  <div class="figure">
-    <img src="images/05-record-flow.svg" alt="การบันทึกเวลาหลังบอสตาย">
-    <div class="caption">ขั้นตอนกดบันทึกเวลาและกรอกคูลดาวน์</div>
-  </div>
-
-  <h2>ถ้าบอสไม่มีค่าคูลดาวน์</h2>
-  <p>ถ้าบอสตัวใดมีค่า <code>cooldown_minutes = 0</code> ระบบจะส่งข้อความเตือนให้ตั้งค่าคูลดาวน์ พร้อมปุ่ม <code>ตั้งค่าคูลดาวน์</code></p>
-  <p>เมื่อกดแล้วให้กรอกเวลาแบบ <code>HH:MM</code> หลังตั้งค่าสำเร็จ ระบบจะปิดปุ่มบนข้อความเดิม แสดงข้อความว่าจะถูกลบในอีก 1 นาที และลบข้อความนั้นอัตโนมัติ</p>
-
-  <h2>ดูบอสที่ใกล้เกิดที่สุด</h2>
-  <pre>/find_boss_spawn</pre>
-  <p>ระบบจะแสดงบอสที่ใกล้เวลาเกิดที่สุด 5 ตัว เรียงจากตัวที่ใกล้เกิดที่สุดก่อน</p>
-  <pre>1. บอส แมพเลเวล 128 | CH3 | เวลาเกิด: Friday, 12 June 2026 18:14 (in 16 minutes)</pre>
-
-  <h2>ดูสถานะบอสทั้งหมด</h2>
-  <pre>/boss_status</pre>
-  <p>หรือระบุหน้า:</p>
-  <pre>/boss_status page:2</pre>
-  <p>ระบบจะแสดงตารางสถานะบอส เช่น เวลาที่บันทึก ช่องเกิด ธาตุ เผ่า และคูลดาวน์</p>
-
-  <h2 class="page-break">คำสั่งที่ใช้บ่อย</h2>
-  <div class="figure">
-    <img src="images/06-command-map.svg" alt="คำสั่งที่ใช้บ่อย">
-    <div class="caption">กลุ่มคำสั่งหลักของระบบ</div>
-  </div>
-
-  <h3>สมาชิกทั่วไป</h3>
-  <pre>/setup_boss
+<h1>คู่มือการใช้งาน BossHunter Discord Bot</h1>
+<p class="subtitle">เวอร์ชันล่าสุดสำหรับระบบ BossHunter ที่รองรับ <code>Austeja</code>, <code>Laima</code> และ <code>Jurate</code></p>
+<blockquote>คู่มือนี้สรุปการใช้งานสำหรับสมาชิกและแอดมิน พร้อมภาพประกอบและคำสั่งสำคัญ</blockquote>
+<h2>ภาพรวมระบบ</h2>
+<div class="figure"><img src="images/01-workflow.svg" alt="ภาพรวมระบบ"></div>
+<ul>
+<li>BossHunter เป็น Discord bot สำหรับติดตามเวลาบอสเกิด แยกข้อมูลตาม server และ channel ของบอส</li>
+<li>ระบบแจ้งเตือนเมื่อบอสเริ่มเข้าเฟส และมีปุ่มให้บันทึกคูลดาวน์หลังบอสตาย</li>
+<li>ข้อมูลหลักเก็บใน SQLite ไฟล์ <code>bot.db</code> ควรสำรองไฟล์นี้ก่อนอัปเดตหรือย้ายเครื่อง</li>
+<li>ระบบรองรับ server: <code>Austeja</code>, <code>Laima</code>, <code>Jurate</code> โดยค่าเริ่มต้นคือ <code>Austeja</code></li>
+</ul>
+<h2>เริ่มต้นใช้งาน</h2>
+<div class="figure"><img src="images/02-group-panel.svg" alt="แผงจัดกลุ่ม"></div>
+<p>ใช้คำสั่งนี้เพื่อเปิดแผงจัดกลุ่มเป้าหมายล่าบอสแบบส่วนตัว:</p>
+<pre>/setup_boss server:Austeja
+/setup_boss server:Laima
+/setup_boss server:Jurate</pre>
+<p>ถ้าใช้คำสั่งแบบ prefix:</p>
+<pre>!setup_boss Austeja
+!setup_boss Jurate</pre>
+<p>ระบบจะส่งแผงไปทาง DM ของผู้ใช้คำสั่ง</p>
+<h2>จัดกลุ่มเป้าหมายล่าบอส</h2>
+<div class="figure"><img src="images/03-upcoming-group.svg" alt="เพิ่ม 5 ตัวใกล้เกิด"></div>
+<ul>
+<li>สมาชิก 1 คนเลือกบอสเข้ากลุ่มเป้าหมายส่วนตัวได้สูงสุด 5 ตัว</li>
+<li>รายชื่อบอสในเมนูจะแสดงเฉพาะ server ที่เลือกใน <code>/setup_boss</code></li>
+<li>ปุ่ม <code>เพิ่ม 5 ตัวใกล้เกิด</code> จะเลือกบอสที่ใกล้เวลาเกิดที่สุด 5 ตัว</li>
+<li>ถ้ายังไม่มีบอสที่ตั้งเวลาเกิด ระบบจะสุ่มบอส 5 ตัวของ server นั้นให้แทน</li>
+<li>เมื่อบอสในกลุ่มเริ่มเข้าเฟส ระบบจะส่ง DM แจ้งสมาชิกเจ้าของกลุ่ม</li>
+</ul>
+<h2>แจ้งเตือนบอสเกิด</h2>
+<div class="figure"><img src="images/04-spawn-alert.svg" alt="แจ้งเตือนบอสเกิด"></div>
+<p>เมื่อถึงเวลาเกิด ระบบจะส่งข้อความใน channel ของ server นั้น เช่น:</p>
+<pre>⚠️ บอส แมพเลเวล 120 CH2 เริ่มเข้าเฟส (5 minutes ago)
+เวลาเกิด: Tuesday, 9 June 2026 14:45
+Server: Jurate | ช่องเกิด: 2 | ธาตุ: น้ำ | เผ่า: กลายพันธุ์
+กดปุ่มบันทึกเวลาคูลดาวน์ หลังบอสตาย
+[บันทึกเวลา]</pre>
+<p>หลังบันทึกเวลาแล้ว ระบบจะ:</p>
+<ul>
+<li>แสดงผู้บันทึก</li>
+<li>คำนวณเวลาเกิดรอบถัดไป</li>
+<li>ปิดปุ่มเพื่อกันกดซ้ำ</li>
+<li>เพิ่มข้อความ <code>ข้อความนี้กำลังจะถูกลบในอีก 1 นาที</code></li>
+<li>ลบข้อความแจ้งเตือนหลัง 1 นาที</li>
+</ul>
+<p>ถ้าแจ้งเตือนแล้วเกิน 45 นาทีแต่ยังไม่มีคนบันทึก ระบบจะตั้ง <code>cooldown_minutes = 0</code> ให้บอสตัวนั้น และแสดงปุ่มตั้งค่าคูลดาวน์แทน</p>
+<h2>บันทึกคูลดาวน์หลังบอสตาย</h2>
+<div class="figure"><img src="images/05-record-flow.svg" alt="บันทึกคูลดาวน์"></div>
+<p>เวลาคูลดาวน์ใช้รูปแบบ <code>HH:MM</code></p>
+<p>ตัวอย่าง:</p>
+<pre>01:35 = 1 ชั่วโมง 35 นาที
+00:45 = 45 นาที
+02:00 = 2 ชั่วโมง
+00:06 = 6 นาที</pre>
+<p>คำสั่งตั้งคูลดาวน์โดยตรง:</p>
+<pre>/set_boss_cooldown boss_id:boss_lv90_ch1_austeja countdown:01:35
+!set_boss_cooldown boss_lv90_ch1_austeja 01:35</pre>
+<p>คำสั่งส่งข้อความให้ตั้งคูลดาวน์ของบอสที่ <code>cooldown_minutes = 0</code>:</p>
+<pre>/set_cooldown_boss server:Jurate page:1
+!set_cooldown_boss Jurate 2</pre>
+<p>คำสั่งนี้ใช้ได้เฉพาะแอดมิน และส่งครั้งละ 10 รายการต่อหน้า</p>
+<h2>ดูสถานะและค้นหาบอส</h2>
+<div class="figure"><img src="images/06-command-map.svg" alt="แผนผังคำสั่ง"></div>
+<p>ดูตารางสถานะบอสเฉพาะ server:</p>
+<pre>/boss_status server:Austeja page:1
+/boss_status server:Jurate page:2
+!boss_status Jurate 2
+!boss_status 2 Jurate</pre>
+<p>ดูรายละเอียดบอสจาก <code>boss_id</code>:</p>
+<pre>/boss_info boss_id:boss_lv80_ch1_austeja
+!boss_info boss_lv80_ch1_austeja</pre>
+<p>ดูบอสที่ใกล้เวลาเกิดที่สุด 5 ตัว:</p>
+<pre>/find_boss_spawn
+!find_boss_spawn</pre>
+<p>ผลลัพธ์ของคำสั่งดูข้อมูลจะแสดงแบบส่วนตัว หรือส่งทาง DM สำหรับคำสั่ง prefix</p>
+<h2>คำสั่งสำหรับสมาชิกทั่วไป</h2>
+<pre>/help
+/setup_boss server:Austeja
+/boss_status server:Austeja page:1
+/boss_info boss_id:boss_lv80_ch1_austeja
 /find_boss_spawn
-/boss_status
-/help</pre>
-
-  <h3>คนที่ช่วยบันทึกเวลา</h3>
-  <pre>/boss_killed
-/boss_killed_id boss_id:boss_lv80_ch1</pre>
-  <p>หรือกดปุ่ม <code>บันทึกเวลา</code> ในข้อความแจ้งเตือนบอสเกิด</p>
-
-  <h3>แอดมินหรือคนดูแลข้อมูลบอส</h3>
-  <pre>/add_boss
-/set_boss_cooldown
+/boss_killed
+/boss_killed_id boss_id:boss_lv80_ch1_austeja</pre>
+<h2>คำสั่งสำหรับแอดมิน</h2>
+<pre>/add_boss boss_id:boss_lv100 cooldown_minutes:480 name:ชื่อบอส server:Austeja channel:CH-1 element:ไฟ race:มังกร
+/edit_boss boss_id:boss_lv100_ch1_austeja name:ชื่อใหม่ server:Austeja channel:CH-1 element:ไฟ race:มังกร cooldown_minutes:480
+/delete_boss boss_id:boss_lv100_ch1_austeja
+/clear_boss boss_id:boss_lv80_ch1_austeja
+/set_alert_channel server:Jurate channel:#boss-jurate
 /reset_cooldown_boss
-/clear_boss
-/set_alert_channel</pre>
-
-  <h2>ข้อควรรู้</h2>
-  <ul>
-    <li>แนะนำให้ใช้คำสั่งแบบ <code>/</code> เพราะ Discord จะแสดงช่องกรอก option ให้ชัดเจน</li>
-    <li>ถ้าไม่ได้รับ DM ให้ตรวจว่าเปิดรับข้อความส่วนตัวจากสมาชิกในเซิร์ฟเวอร์ไว้หรือไม่</li>
-    <li>แผง <code>/setup_boss</code> เป็นของส่วนตัว สมาชิกคนอื่นจะไม่เห็นกลุ่มของเรา</li>
-    <li>กลุ่มเป้าหมายล่าบอสจำกัดที่ 5 ตัวต่อสมาชิก</li>
-    <li>ถ้ากดปุ่มบนข้อความเก่ามาก ๆ แล้วใช้งานไม่ได้ ให้เปิดแผงใหม่ด้วย <code>/setup_boss</code></li>
-  </ul>
-
-  <h2>สรุปขั้นตอนเร็ว</h2>
-  <ol>
-    <li>ใช้ <code>/setup_boss</code></li>
-    <li>เลือกบอสเข้ากลุ่ม หรือกด <code>เพิ่ม 5 ตัวใกล้เกิด</code></li>
-    <li>รอ DM เมื่อบอสในกลุ่มเริ่มเข้าเฟส</li>
-    <li>หลังบอสตาย กด <code>บันทึกเวลา</code></li>
-    <li>กรอกคูลดาวน์แบบ <code>HH:MM</code></li>
-    <li>ระบบคำนวณรอบถัดไปและแจ้งเตือนอัตโนมัติ</li>
-  </ol>
+/reset_cooldown_boss boss_id:boss_lv90_ch1_austeja
+/set_boss_cooldown boss_id:boss_lv90_ch1_austeja countdown:01:35
+/set_cooldown_boss server:Jurate page:1</pre>
+<h2>ข้อควรจำสำหรับ Production</h2>
+<ul>
+<li>ห้ามนำ <code>.env</code> หรือ <code>DISCORD_TOKEN</code> ขึ้น GitHub</li>
+<li>ควร backup <code>bot.db</code> เป็นประจำ เพราะเป็นฐานข้อมูลหลักของระบบ</li>
+<li>บน production ควรรันด้วย <code>systemd</code> หรือ process manager และตั้ง restart อัตโนมัติ</li>
+<li>ระบบใช้ rotating log เพื่อลดปัญหา <code>bot.log</code> โตไม่หยุด</li>
+<li>ถ้าใช้ <code>set_cooldown_boss</code> กับบอสจำนวนมาก ให้ใช้ <code>page</code> เพื่อลดการส่งข้อความจำนวนมากในครั้งเดียว</li>
+</ul>
 </body>
 </html>
