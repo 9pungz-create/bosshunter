@@ -656,11 +656,19 @@ def build_kill_record_text(
 
 
 def parse_countdown_minutes(value: str) -> int:
-    parts = value.strip().split(":")
-    if len(parts) != 2:
+    countdown_text = value.strip()
+    if ":" in countdown_text:
+        parts = countdown_text.split(":")
+        if len(parts) != 2:
+            raise ValueError("invalid format")
+        hours_text, minutes_text = parts
+    elif countdown_text.isdigit() and 1 <= len(countdown_text) <= 4:
+        padded_text = countdown_text.zfill(4)
+        hours_text = padded_text[:-2]
+        minutes_text = padded_text[-2:]
+    else:
         raise ValueError("invalid format")
 
-    hours_text, minutes_text = parts
     if not hours_text.isdigit() or not minutes_text.isdigit():
         raise ValueError("invalid number")
 
@@ -674,6 +682,11 @@ def parse_countdown_minutes(value: str) -> int:
         raise ValueError("zero cooldown")
 
     return total_minutes
+
+
+def format_countdown_minutes(total_minutes: int) -> str:
+    hours, minutes = divmod(total_minutes, 60)
+    return f"{hours:02d}:{minutes:02d}"
 
 
 def parse_add_boss_details(details: str) -> tuple[str, str, str, str, str]:
@@ -1307,10 +1320,10 @@ class AlertBossKilledModal(discord.ui.Modal):
         self.alert_message = alert_message
         self.alert_spawn_time = alert_spawn_time
         self.countdown = discord.ui.TextInput(
-            label="เวลาเค้าดาวน์ HH:MM",
-            placeholder="เช่น 01:35 = 1 ชั่วโมง 35 นาที",
+            label="เวลาเค้าดาวน์ HHMM หรือ HH:MM",
+            placeholder="เช่น 0030 = 30 นาที, 01:35 = 1 ชั่วโมง 35 นาที",
             default="01:00",
-            min_length=5,
+            min_length=1,
             max_length=5,
             required=True,
         )
@@ -1321,7 +1334,7 @@ class AlertBossKilledModal(discord.ui.Modal):
             cooldown_minutes = parse_countdown_minutes(str(self.countdown.value))
         except ValueError:
             await interaction.response.send_message(
-                "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HH:MM` เช่น `01:35`",
+                "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HHMM` หรือ `HH:MM` เช่น `0030`, `01:35`",
                 ephemeral=True,
             )
             return
@@ -1380,10 +1393,10 @@ class ActiveBossKilledModal(discord.ui.Modal):
         self.boss_id = boss_id
         self.alert_spawn_time = alert_spawn_time
         self.countdown = discord.ui.TextInput(
-            label="เวลาคูลดาวน์ HH:MM",
-            placeholder="เช่น 01:35 = 1 ชั่วโมง 35 นาที",
+            label="เวลาคูลดาวน์ HHMM หรือ HH:MM",
+            placeholder="เช่น 0030 = 30 นาที, 01:35 = 1 ชั่วโมง 35 นาที",
             default="01:00",
-            min_length=5,
+            min_length=1,
             max_length=5,
             required=True,
         )
@@ -1394,7 +1407,7 @@ class ActiveBossKilledModal(discord.ui.Modal):
             cooldown_minutes = parse_countdown_minutes(str(self.countdown.value))
         except ValueError:
             await interaction.response.send_message(
-                "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HH:MM` เช่น `01:35`",
+                "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HHMM` หรือ `HH:MM` เช่น `0030`, `01:35`",
                 ephemeral=True,
             )
             return
@@ -1541,10 +1554,10 @@ class SetCooldownModal(discord.ui.Modal):
         self.alert_message_id = alert_message_id
         self.cooldown_message_id = cooldown_message_id
         self.countdown = discord.ui.TextInput(
-            label="เวลาคูลดาวน์ HH:MM",
-            placeholder="เช่น 01:35 = 1 ชั่วโมง 35 นาที",
+            label="เวลาคูลดาวน์ HHMM หรือ HH:MM",
+            placeholder="เช่น 0030 = 30 นาที, 01:35 = 1 ชั่วโมง 35 นาที",
             default="01:00",
-            min_length=5,
+            min_length=1,
             max_length=5,
             required=True,
         )
@@ -1555,7 +1568,7 @@ class SetCooldownModal(discord.ui.Modal):
             cooldown_minutes = parse_countdown_minutes(str(self.countdown.value))
         except ValueError:
             await interaction.response.send_message(
-                "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HH:MM` เช่น `01:35`",
+                "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HHMM` หรือ `HH:MM` เช่น `0030`, `01:35`",
                 ephemeral=True,
             )
             return
@@ -1570,7 +1583,7 @@ class SetCooldownModal(discord.ui.Modal):
             return
 
         await interaction.response.send_message(
-            f"✅ ตั้งค่าคูลดาวน์ของ **{boss['name']}** เป็น `{self.countdown.value}` "
+            f"✅ ตั้งค่าคูลดาวน์ของ **{boss['name']}** เป็น `{format_countdown_minutes(cooldown_minutes)}` "
             f"({cooldown_minutes} นาที) แล้ว\n"
             f"เวลาเกิดรอบถัดไป: {discord_time(next_spawn)} ({discord_time(next_spawn, 'R')})\n"
             f"ผู้บันทึก: {member_display(interaction.user)}",
@@ -1982,7 +1995,7 @@ def build_help_embed() -> discord.Embed:
     embed.add_field(
         name="ตั้งค่าคูลดาวน์",
         value=(
-            "`/set_boss_cooldown boss_id:boss_lv80_ch1 countdown:01:35` ตั้ง cooldown เป็น 1 ชั่วโมง 35 นาที\n"
+            "`/set_boss_cooldown boss_id:boss_lv80_ch1 countdown:0030` ตั้ง cooldown เป็น 30 นาที\n"
             "`/reset_cooldown_boss` ตั้ง cooldown ของบอสทุกตัวเป็น 0\n"
             "`/reset_cooldown_boss boss_id:boss_lv90_ch1` ตั้ง cooldown ของบอสที่ระบุเป็น 0"
         ),
@@ -2004,7 +2017,7 @@ def build_help_embed() -> discord.Embed:
     )
     embed.add_field(
         name="รูปแบบเวลา",
-        value="ใช้ `HH:MM` เช่น `00:06`, `01:35`, `02:00`",
+        value="ใช้ `HHMM` หรือ `HH:MM` เช่น `0030`, `00:06`, `01:35`, `02:00`",
         inline=False,
     )
     embed.set_footer(text="แนะนำให้ใช้ Slash Commands แบบ / เพื่อความง่าย")
@@ -2150,7 +2163,7 @@ async def send_missing_cooldown_alert(
         f"⏱️ **ต้องตั้งค่าคูลดาวน์บอส**\n"
         f"บอส: **{boss['name']}** (`{boss_id}`)\n"
         f"{boss_detail_line(boss)}\n"
-        f"ตอนนี้ `cooldown_minutes` เป็น `0` กรุณากดปุ่มด้านล่างเพื่อใส่เวลาคูลดาวน์รูปแบบ `HH:MM`",
+        f"ตอนนี้ `cooldown_minutes` เป็น `0` กรุณากดปุ่มด้านล่างเพื่อใส่เวลาคูลดาวน์รูปแบบ `HHMM` หรือ `HH:MM`",
         view=SetCooldownView(boss_id),
     )
 
@@ -2982,7 +2995,7 @@ async def set_boss_cooldown(ctx: commands.Context, boss_id: str, countdown: str)
     try:
         cooldown_minutes = parse_countdown_minutes(countdown)
     except ValueError:
-        await send_private_command_error(ctx, "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HH:MM` เช่น `01:35`")
+        await send_private_command_error(ctx, "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HHMM` หรือ `HH:MM` เช่น `0030`, `01:35`")
         return
 
     try:
@@ -2991,7 +3004,12 @@ async def set_boss_cooldown(ctx: commands.Context, boss_id: str, countdown: str)
         await send_private_command_error(ctx, f"ไม่พบ `{boss_id}`")
         return
 
-    message = build_set_boss_cooldown_message(boss, countdown, cooldown_minutes, next_spawn)
+    message = build_set_boss_cooldown_message(
+        boss,
+        format_countdown_minutes(cooldown_minutes),
+        cooldown_minutes,
+        next_spawn,
+    )
     try:
         await ctx.author.send(message)
     except discord.HTTPException:
@@ -3004,7 +3022,7 @@ async def set_boss_cooldown(ctx: commands.Context, boss_id: str, countdown: str)
         pass
 
 
-@bot.tree.command(name="set_boss_cooldown", description="ตั้ง cooldown ของบอสด้วยรูปแบบ HH:MM")
+@bot.tree.command(name="set_boss_cooldown", description="ตั้ง cooldown ของบอสด้วยรูปแบบ HHMM หรือ HH:MM")
 @discord.app_commands.default_permissions(manage_guild=True)
 async def set_boss_cooldown_slash(
     interaction: discord.Interaction,
@@ -3015,7 +3033,7 @@ async def set_boss_cooldown_slash(
         cooldown_minutes = parse_countdown_minutes(countdown)
     except ValueError:
         await interaction.response.send_message(
-            "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HH:MM` เช่น `01:35`",
+            "รูปแบบเวลาไม่ถูกต้อง กรุณาใส่เป็น `HHMM` หรือ `HH:MM` เช่น `0030`, `01:35`",
             ephemeral=True,
         )
         return
@@ -3027,7 +3045,12 @@ async def set_boss_cooldown_slash(
         return
 
     await interaction.response.send_message(
-        build_set_boss_cooldown_message(boss, countdown, cooldown_minutes, next_spawn),
+        build_set_boss_cooldown_message(
+            boss,
+            format_countdown_minutes(cooldown_minutes),
+            cooldown_minutes,
+            next_spawn,
+        ),
         ephemeral=True,
     )
 
